@@ -7,7 +7,7 @@ def build_graph():
     # Cities = { "A" (str) : city object }
     graph = {}
     cities = {}
-    with open('Tests/test-road-segments.txt', 'r') as f:
+    with open('road-segments.txt', 'r') as f:
         for line in f:
             temp = line.split(' ')
             str_city_a = temp[0]
@@ -38,5 +38,4 @@ def build_graph():
                 graph[str_city_b].append(seg_b)
             else:
                 graph[str_city_b] = [seg_b]
-            print(graph[str_city_b],graph[str_city_a])
     return graph, cities
