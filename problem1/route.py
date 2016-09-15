@@ -20,13 +20,13 @@
 """
 import sys
 from utils_graph import build_graph
-from algos import dfs
+from algos import best_path
 
 
 if __name__ == "__main__":
     # start_city, end_city, routing_options, routing_algorithm = sys.argv[1:]
     graph, cities = build_graph()
     #print (graph,cities)
-    print (dfs(graph,"A","X",""))
+    print (best_path(graph,"dfs","A","X",""))
 
     # main(start_city, end_city, routing_options, routing_algorithm)
