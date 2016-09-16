@@ -4,3 +4,10 @@
 # (on the left above) given an initial board configuration.
 #The goal is to find a solution to this problem eciently using A* search
 #Input configuration is in the file input.txt
+
+import sys
+from readInput import buildSquare
+
+if __name__ == "__main__":
+    square = buildSquare()
+    print square
