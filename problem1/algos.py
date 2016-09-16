@@ -38,8 +38,54 @@ def ids(graph, start_city, end_city, routing_options):
     return
 
 def a_star(graph, start_city, end_city, routing_options):
+    previous = []
+    previous[start_city] = []
     if (start_city == end_city):
-        return [start_city]
+        return start_city
+    path = []
+    g_cost = []
+    f_cost = []
+    previous = []
+    fringe = [start_city]
+    g_cost[start_city] = 0
+    f_cost[start_city] = heuristic(start_city,end_city,routing_options)
+    while(fringe):
+        min = float('inf')
+        for city, cost in f_cost.items():
+            if min > cost:
+                min = cost
+                min_city = city
+        if (city == end_city):
+            return [create_path(previous, city)]
+        fringe.remove(city)
+        path.append(city)
+        for next_city in graph[city]:
+            if next_city in path:
+                continue
+            temp = g_cost[city] + distance(city, next_city,graph)
+            if next_city not in fringe:
+                fringe.append(next_city)
+            elif temp >= g_cost[next_city]:
+                continue
+            previous[next_city] = city
+            g_cost[next_city] = temp
+            f_cost[next_city] = g_cost[next_city] + heuristic(next_city,end_city,routing_options)
+
+    return
+
+def create_path(previous, city):
+    path = [city]
+    city = previous [city]
+    for prev in previous:
+        path.append(city)
+        city = previous[prev]
+    return path
+
+def distance(cityA, cityB, graph):
+    return graph[cityA][cityB].distance
+
+def heuristic(start_city,end_city,routing_options):
+    """
     h = 0
     if routing_options == "segments":
         h = h_segments()
@@ -51,25 +97,5 @@ def a_star(graph, start_city, end_city, routing_options):
         h = h_scenic()
     else:
         return False
-    fringe = []
-    min = float('inf')
-    for next_city in graph(start_city):
-        if min > next_city.distance:
-            min = next_city.distance
-            min_city = next_city.end_city.name
-        fringe.append(next_city.end_city.name,next_city.distance)
-
-    return
-
-def h_segments():
-    return
-
-def h_time():
-    return
-
-def h_distance(cityA, cityB):
-
-    return
-
-def h_scenic():
+    """
     return
