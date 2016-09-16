@@ -6,14 +6,13 @@ def convert2int(a):
         return -1
 
 
-def add_segment(cityA, cityB, distance, limit, highway):
-    return Segment(cityA, cityB, distance, limit, highway)
+def add_segment(cityB, distance, limit, highway):
+    return Segment(cityB, distance, limit, highway)
 
 
 class Segment:
 
-    def __init__(self, start_city, end_city, distance, limit, highway):
-        self.start_city = start_city
+    def __init__(self, end_city, distance, limit, highway):
         self.end_city = end_city
         self.distance = convert2int(distance)
         self.limit = convert2int(limit)
@@ -31,5 +30,5 @@ class City:
         return hash(self.name)
 
     def __eq__(self, other):
-        #return self.name == other.name
+        # return self.name == other.name
         return self.name == other

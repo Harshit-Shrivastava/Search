@@ -7,50 +7,42 @@ routing_options =
 as roads with speed limits 55 mph or greater)
 """
 
+
 def best_path(graph, algo, start_city, end_city, routing_options):
     if algo.lower() == "dfs":
-        return dfs(graph, start_city, end_city, routing_options);
+        return dfs_bfs(graph, start_city, end_city, routing_options, -1)
     elif algo.lower() == "bfs":
-        return bfs(graph, start_city, end_city, routing_options);
+        return dfs_bfs(graph, start_city, end_city, routing_options, 0)
     elif algo.lower() == "ids":
-        return ids(graph, start_city, end_city, routing_options);
+        return ids(graph, start_city, end_city, routing_options)
     elif algo.lower() == "astar":
-        return a_star(graph, start_city, end_city, routing_options);
+        return a_star(graph, start_city, end_city, routing_options)
     else:
         return False
 
-def dfs(graph, start_city, end_city, routing_options):
+
+def dfs_bfs(graph, start_city, end_city, routing_options, algo_flag):
     stack = [(start_city, [start_city])]
     visited = set()
     while stack:
-        (city, path) = stack.pop()
+        (city, path) = stack.pop(algo_flag)
         if city not in visited:
             if city == end_city:
                 return path
             visited.add(city)
             for next_city in graph[city]:
-                stack.append((next_city.end_city.name, path + [next_city.end_city.name]))
+                stack.append((next_city.end_city.name, path +  [
+                    next_city.end_city.name]))
 
-def bfs(graph, start_city, end_city, routing_options):
-    return
 
 def ids(graph, start_city, end_city, routing_options):
-    return
+    pass
+
 
 def a_star(graph, start_city, end_city, routing_options):
     if (start_city == end_city):
         return [start_city]
-    h = 0
-    if routing_options == "segments":
-        h = h_segments()
-    elif routing_options == "time":
-        h = h_time()
-    elif routing_options == "distance":
-        h = h_distance()
-    elif routing_options == "scenic":
-        h = h_scenic()
-    else:
-        return False
+    h = check(routing_options)
     fringe = []
     min = float('inf')
     for next_city in graph(start_city):
@@ -61,15 +53,31 @@ def a_star(graph, start_city, end_city, routing_options):
 
     return
 
+
+def check(option):
+    if option == "segments":
+        return h_segments()
+    elif option == "time":
+        return h_time()
+    elif option == "distance":
+        return h_distance()
+    elif option == "scenic":
+        return h_scenic()
+    else:
+        return False
+
+
 def h_segments():
-    return
+    pass
+
 
 def h_time():
-    return
+    pass
+
 
 def h_distance(cityA, cityB):
+    pass
 
-    return
 
 def h_scenic():
-    return
+    pass

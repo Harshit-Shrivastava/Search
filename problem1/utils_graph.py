@@ -14,8 +14,8 @@ def build_graph():
             str_city_b = temp[1]
             city_a = City(str_city_a)
             city_b = City(str_city_b)
-            seg_a = add_segment(city_a, city_b, temp[2], temp[3], temp[4])
-            seg_b = add_segment(city_b, city_a, temp[2], temp[3], temp[4])
+            seg_a = add_segment(city_b, temp[2], temp[3], temp[4])
+            seg_b = add_segment(city_a, temp[2], temp[3], temp[4])
 
             # Add to Cities Hash
             if str_city_a not in cities:
