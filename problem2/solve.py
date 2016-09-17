@@ -1,29 +1,28 @@
-from math import sqrt
+def aStar(curSquare):
+    goalState = [['1','2','3','4'],['5','6','7','8'],['9','10','11','12'],['13','14','15','0']]
+    heuristic = heuristicCalculator(curSquare, goalState)
 
-
-def aStar(square):
-    heuristicCalculator(square)
+#function to find position of an element in an 2D list
+#code from http://stackoverflow.com/questions/6518291/using-index-on-multidimensional-lists
+def indexSearch(curState, elem):
+    for row, i in enumerate(curState):
+        try:
+            column = i.index(elem)
+        except ValueError:
+            continue
+        return row, column
+    return -1
+#code from stackoverflow.com ends here
 
 #this function calculates the heuristic for the a-star algorithm
 #heuristic is taken as the manhattan distance between the current position of the
-def heuristicCalculator(square):
-    heuristic = [[0]*4]*4
-    for i in range(0,4):
-        for j in range(0,4):
-            if square[i][j] == 0:
-                heuristic[i][j] = 0
-            else:
-                temp = int(square[i][j])
-                temp_quo = temp / 4
-                temp_rem = temp % 4
-                #getting the row of the final position
-                pos_i = temp_quo - 1
-                #getting the column of the final position
-                if temp_rem == 0:
-                    pos_j = 3
-                else:
-                    pos_j = temp_rem - 1
-                #calculating manhattan distance
-                manhattan_distance = abs(pos_j - j) + abs(pos_i - i) - 1
-                heuristic[i][j] = manhattan_distance
-    print heuristic
+def heuristicCalculator(square, goalState):
+    heuristic = 0
+    for i in range (0,4):
+        for j in range (0,4):
+            temp = square[i][j]
+            index = indexSearch(goalState, temp)
+            cur_manhattan_distance = abs(index[0] - i) + abs(index[1] - j)
+            print "%s %d %d" %(square[i][j],cur_manhattan_distance,heuristic)
+            heuristic = heuristic + cur_manhattan_distance
+    return heuristic
