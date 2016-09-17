@@ -5,7 +5,7 @@ def read_data():
             friends[line.split()[0]] = set(line.split()[1:])
     temp = set(friends)
     for person in friends:
-        temp = set(temp |friends[person])
+        temp = set(temp | friends[person])
     for value in temp:
         if value not in friends:
             friends[value] = set()
@@ -14,41 +14,51 @@ def read_data():
             if person != other_person:
                 if person in friends[other_person]:
                     friends[person].add(other_person)
-    print(friends)
     return friends
 
-def compute_neighbours(friends, seats_per_table):
 
-    tentitive_neighbours = {}
+def compute_neighbours(friends, seats_per_table):
+    if seats_per_table < 1:
+        return False
+    elif seats_per_table == 1:
+        return set(friends.keys())
+
+    tentative_neighbours = {}
+    # tentative stores all ppl who can b seated with a person
     for person in friends:
-        tentitive_neighbours[person] = set()
+        tentative_neighbours[person] = set()
     for person in friends:
         for x in friends:
-            if x not in friends[person] and x != person:
-                print(x,person)
-                tentitive_neighbours[person].add(x)
-    ##tentitive stores all ppl who can b seated with a person
-    ##somehow tentitive is coming wrong..please check if u have time
+            if x != person and x not in friends[person]:
+                tentative_neighbours[person].add(x)
 
+    tables = {}
+    i = 0
+    for person in tentative_neighbours:
+        tables[i] = set(person)
+        # for neighbour in tentative_neighbours[person]:
+            # if
+        i += 1
     """tables = {}
     i=0
-    for neighbour in tentitive_neighbours:
-        if len(tentitive_neighbours[neighbour]) <= seats_per_table-1:
-            print(tentitive_neighbours[neighbour],neighbour)
-            tables[i].add(tentitive_neighbours[neighbour])
+    for neighbour in tentative_neighbours:
+        if len(tentative_neighbours[neighbour]) <= seats_per_table-1:
+            print(tentative_neighbours[neighbour],neighbour)
+            tables[i].add(tentative_neighbours[neighbour])
             tables[i].add(neighbour)
             i += 1
 
     print(tables)"""
-    """for neighbour in tentitive_neighbours:
+    """for neighbour in tentative_neighbours:
         tables[i] = set(neighbour)
         for j in range( seats_per_table -1):
             n = list(neighbour)[j]
             tables[i].add( n )
-            tentitive_neighbours[neighbour].remove(n)
+            tentative_neighbours[neighbour].remove(n)
         i += 1"""
-    #return tables
-    return tentitive_neighbours
+    # return tables
+    return tentative_neighbours
+
 
 if __name__ == "__main__":
-    print(compute_neighbours(read_data(),3))
+    print(compute_neighbours(read_data(), 3))
