@@ -7,7 +7,9 @@
 
 import sys
 from readInput import buildSquare
+from solve import aStar
 
 if __name__ == "__main__":
     square = buildSquare()
     print square
+    aStar(square)
