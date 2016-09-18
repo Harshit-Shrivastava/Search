@@ -11,5 +11,5 @@ from solve import aStar
 
 if __name__ == "__main__":
     square = buildSquare()
-    print square
+    #print square
     aStar(square)

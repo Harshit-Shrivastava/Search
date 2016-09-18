@@ -1,3 +1,6 @@
+from library import createElement
+from library import fringePriority
+
 def successor(curSquare):
     index = indexSearch(curSquare, '0')
     cost1 = 0
@@ -5,11 +8,16 @@ def successor(curSquare):
     cost3 = 0
     cost4 = 0
     #print index
+    i = index[0]
+    j = index[1]
+    tempSquare = curSquare
+    #square1 =
     return curSquare
 
 def aStar(curSquare):
     goalState = [['1','2','3','4'],['5','6','7','8'],['9','10','11','12'],['13','14','15','0']]
     heuristic = heuristicCalculator(curSquare, goalState)
+    #print heuristic
     #creating a priority queue in python
     #example studied from http://www.bogotobogo.com/python/python_PriorityQueue_heapq_Data_Structure.php
     try:
@@ -17,24 +25,25 @@ def aStar(curSquare):
     except ImportError:
         import queue as Q
     fringe = Q.PriorityQueue()
-    fringe.put((heuristic, curSquare))
-    iterations = 0
-    while not fringe.empty():
-        for s in successor(fringe.get()):
-            iterations = iterations + 1
-            if s == goalState:
-                return
-            if iterations == 2:
-                break
-            heuristic = heuristicCalculator(s, goalState)
-            fringe.put(heuristic, s)
+    tempFringeElem = createElement(curSquare,0,heuristic)
+    tempFringePri = fringePriority(tempFringeElem)
+    fringe.put((tempFringePri, tempFringeElem))
+
+
+    #while not fringe.empty():
+    #    for s in successor(fringe.get()):
+    #        if s == goalState:
+    #            return
+    #        if iterations == 2:
+    #            break
+    #        heuristic = heuristicCalculator(s, goalState)
+    #        fringe.put(heuristic, s)
     return False
 
 #function to find position of an element in an 2D list
 #code from http://stackoverflow.com/questions/6518291/using-index-on-multidimensional-lists
 def indexSearch(curState, elem):
     for row, i in enumerate(curState):
-        print elem
         try:
             column = i.index(elem)
         except ValueError:
