@@ -1,6 +1,10 @@
 def successor(curSquare):
     index = indexSearch(curSquare, '0')
-    
+    cost1 = 0
+    cost2 = 0
+    cost3 = 0
+    cost4 = 0
+    #print index
     return curSquare
 
 def aStar(curSquare):
@@ -14,10 +18,14 @@ def aStar(curSquare):
         import queue as Q
     fringe = Q.PriorityQueue()
     fringe.put((heuristic, curSquare))
-    while len(fringe)>0:
+    iterations = 0
+    while not fringe.empty():
         for s in successor(fringe.get()):
+            iterations = iterations + 1
             if s == goalState:
                 return
+            if iterations == 2:
+                break
             heuristic = heuristicCalculator(s, goalState)
             fringe.put(heuristic, s)
     return False
@@ -26,6 +34,7 @@ def aStar(curSquare):
 #code from http://stackoverflow.com/questions/6518291/using-index-on-multidimensional-lists
 def indexSearch(curState, elem):
     for row, i in enumerate(curState):
+        print elem
         try:
             column = i.index(elem)
         except ValueError:
