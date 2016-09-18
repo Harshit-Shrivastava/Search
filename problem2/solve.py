@@ -1,18 +1,14 @@
 from library import createElement
 from library import fringePriority
 
-def successor(curSquare):
-    index = indexSearch(curSquare, '0')
-    cost1 = 0
-    cost2 = 0
-    cost3 = 0
-    cost4 = 0
-    #print index
-    i = index[0]
-    j = index[1]
-    tempSquare = curSquare
-    #square1 =
-    return curSquare
+def successor(curStateObject):
+    priority, elem = curStateObject
+    curState = elem.state
+    curCostSoFar = elem.costSoFar
+    curHeuristic = elem.heuristic
+    index = indexSearch(curState, '0')
+    print index
+
 
 def aStar(curSquare):
     goalState = [['1','2','3','4'],['5','6','7','8'],['9','10','11','12'],['13','14','15','0']]
@@ -28,17 +24,18 @@ def aStar(curSquare):
     tempFringeElem = createElement(curSquare,0,heuristic)
     tempFringePri = fringePriority(tempFringeElem)
     fringe.put((tempFringePri, tempFringeElem))
+    #priority, elem = fringe.get()
+    #print (elem).heuristic
 
-
-    #while not fringe.empty():
-    #    for s in successor(fringe.get()):
-    #        if s == goalState:
-    #            return
-    #        if iterations == 2:
-    #            break
-    #        heuristic = heuristicCalculator(s, goalState)
-    #        fringe.put(heuristic, s)
-    return False
+    #TODO: Need to think here, still not clear on the approach
+    while not fringe.empty():
+        successor(fringe.get())
+            #priority, elem = s
+            #if elem == goalState:
+            #    return
+            #heuristic = heuristicCalculator(s, goalState)
+            #fringe.put(heuristic, s)
+        return False
 
 #function to find position of an element in an 2D list
 #code from http://stackoverflow.com/questions/6518291/using-index-on-multidimensional-lists
