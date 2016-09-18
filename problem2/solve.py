@@ -1,6 +1,26 @@
+def successor(curSquare):
+    index = indexSearch(curSquare, '0')
+    
+    return curSquare
+
 def aStar(curSquare):
     goalState = [['1','2','3','4'],['5','6','7','8'],['9','10','11','12'],['13','14','15','0']]
     heuristic = heuristicCalculator(curSquare, goalState)
+    #creating a priority queue in python
+    #example studied from http://www.bogotobogo.com/python/python_PriorityQueue_heapq_Data_Structure.php
+    try:
+        import Queue as Q
+    except ImportError:
+        import queue as Q
+    fringe = Q.PriorityQueue()
+    fringe.put((heuristic, curSquare))
+    while len(fringe)>0:
+        for s in successor(fringe.get()):
+            if s == goalState:
+                return
+            heuristic = heuristicCalculator(s, goalState)
+            fringe.put(heuristic, s)
+    return False
 
 #function to find position of an element in an 2D list
 #code from http://stackoverflow.com/questions/6518291/using-index-on-multidimensional-lists
@@ -23,6 +43,6 @@ def heuristicCalculator(square, goalState):
             temp = square[i][j]
             index = indexSearch(goalState, temp)
             cur_manhattan_distance = abs(index[0] - i) + abs(index[1] - j)
-            print "%s %d %d" %(square[i][j],cur_manhattan_distance,heuristic)
+            #print "%s %d %d" %(square[i][j],cur_manhattan_distance,heuristic)
             heuristic = heuristic + cur_manhattan_distance
     return heuristic
