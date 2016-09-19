@@ -6,22 +6,23 @@ routing_options =
 - scenic finds the route having the least possible distance spent on highways (which we define
 as roads with speed limits 55 mph or greater)
 """
+from math import radians, cos, sin, asin, sqrt
 
 
-def best_path(graph, algo, start_city, end_city, routing_options):
+def best_path(graph, cities, algo, start_city, end_city, routing_options):
     if algo.lower() == "dfs":
-        return dfs_bfs(graph, start_city, end_city, routing_options, -1)
+        return dfs_bfs(graph, cities, start_city, end_city, routing_options, -1)
     elif algo.lower() == "bfs":
-        return dfs_bfs(graph, start_city, end_city, routing_options, 0)
+        return dfs_bfs(graph, cities, start_city, end_city, routing_options, 0)
     elif algo.lower() == "ids":
-        return ids(graph, start_city, end_city, routing_options)
+        return ids(graph, cities, start_city, end_city, routing_options)
     elif algo.lower() == "astar":
-        return a_star(graph, start_city, end_city, routing_options)
+        return a_star(graph, cities, start_city, end_city, routing_options)
     else:
         return False
 
 
-def dfs_bfs(graph, start_city, end_city, routing_options, algo_flag):
+def dfs_bfs(graph, cities, start_city, end_city, routing_options, algo_flag):
     stack = [(start_city, [start_city])]
     visited = set()
     while stack:
@@ -31,53 +32,100 @@ def dfs_bfs(graph, start_city, end_city, routing_options, algo_flag):
                 return path
             visited.add(city)
             for next_city in graph[city]:
-                stack.append((next_city.end_city.name, path +  [
+                stack.append((next_city.end_city.name, path + [
                     next_city.end_city.name]))
 
 
-def ids(graph, start_city, end_city, routing_options):
+def ids(graph, cities, start_city, end_city, routing_options):
     pass
 
 
-def a_star(graph, start_city, end_city, routing_options):
-    if (start_city == end_city):
+def a_star(graph, cities, start_city, end_city, routing_options):
+    if start_city == end_city:
         return [start_city]
-    h = check(routing_options)
-    fringe = []
-    min = float('inf')
-    for next_city in graph(start_city):
-        if min > next_city.distance:
-            min = next_city.distance
-            min_city = next_city.end_city.name
-        fringe.append(next_city.end_city.name,next_city.distance)
+    path = set()
+    fringe = set()
+    fringe.add(start_city)
+    previous = dict()
+    g = dict()
+    f = dict()
+    g[start_city] = 0
+    f[start_city] = heuristic(cities, start_city, end_city, routing_options)
+    while len(fringe) > 0:
+        min = float('Inf')
+        for fx in f:
+            if fx in fringe and f[fx] < min:
+                min = f[fx]
+                curr = fx
+        if curr == end_city:
+            return create_path(previous, curr)
+        fringe.remove(curr)
+        path.add(curr)
+        for neighbour in graph[curr]:
+            if neighbour.end_city.name not in path:
+                tentativeCost = g[curr] + cost(graph, curr, neighbour.end_city.name, routing_options)
+                if neighbour.end_city.name not in fringe:
+                    fringe.add(neighbour.end_city.name)
+                elif tentativeCost >= g[neighbour.end_city.name]:
+                    continue
+                previous[neighbour.end_city.name] = curr
+                g[neighbour.end_city.name] = tentativeCost
+                f[neighbour.end_city.name] = g[neighbour.end_city.name] + heuristic(cities, neighbour.end_city.name, end_city, routing_options)
+    return False
 
-    return
+
+def create_path(previous, curr):
+    path = [curr]
+    while curr in previous:
+        curr = previous[curr]
+        path.append(curr)
+    return path
 
 
-def check(option):
-    if option == "segments":
-        return h_segments()
-    elif option == "time":
-        return h_time()
-    elif option == "distance":
-        return h_distance()
-    elif option == "scenic":
-        return h_scenic()
+def cost(graph, start_city, end_city, routing_options):
+    if routing_options == "segments":
+        return False
+    elif routing_options == "time":
+        return False
+    elif routing_options == "distance":
+        for seg in graph[start_city]:
+            if seg.end_city == end_city:
+                return seg.distance
+    elif routing_options == "scenic":
+        return False
     else:
         return False
+    return False
 
 
-def h_segments():
-    pass
+def heuristic(cities, start_city, end_city, routing_options):
+
+    if routing_options == "segments":
+        return False
+    elif routing_options == "time":
+        return False
+    elif routing_options == "distance":
+        return distance(cities[start_city].lat, cities[start_city].long, cities[end_city].lat, cities[end_city].long)
+    elif routing_options == "scenic":
+        return False
+    else:
+        return False
+    return False
 
 
-def h_time():
-    pass
+# http://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
+def distance(lat1, lon1, lat2, lon2):
+    p = 0.017453292519943295 # pi/180
+    lat1 = float(lat1)
+    lat2 = float(lat2)
+    lon1 = float(lon1)
+    lon2 = float(lon2)
+    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
 
-
-def h_distance(cityA, cityB):
-    pass
-
-
-def h_scenic():
-    pass
+    # haversine formula
+    dlon = lon2 - lon1
+    dlat = lat2 - lat1
+    a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
+    c = 2 * asin(sqrt(a))
+    r = 3956  # Radius of earth 6371 for kilometers. 3956 for miles
+    return c * r

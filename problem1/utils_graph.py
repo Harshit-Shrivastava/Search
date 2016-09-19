@@ -38,4 +38,11 @@ def build_graph():
                 graph[str_city_b].append(seg_b)
             else:
                 graph[str_city_b] = [seg_b]
+    with open('city-gps.txt', 'r') as f:
+        for line in f:
+            temp = line.split(' ')
+            if temp[0] not in cities:
+                cities[temp[0]] = City(temp[0])
+            cities[temp[0]].lat = temp[1]
+            cities[temp[0]].long = temp[2]
     return graph, cities

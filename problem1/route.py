@@ -21,12 +21,11 @@
 import sys
 from utils_graph import build_graph
 from algos import best_path
-
+from algos import heuristic
 
 if __name__ == "__main__":
     # start_city, end_city, routing_options, routing_algorithm = sys.argv[1:]
     graph, cities = build_graph()
-    print (best_path(graph, "bfs", "Bloomington,_Indiana",  "Indianapolis,"
-                                                             "_Indiana", ""))
-
+    print(best_path(graph, cities, "astar", "Aberdeen,_North_Carolina",  "Addicks,_Texas", "distance"))
+    #print(heuristic(cities,"Aberdeen,_Mississippi","Greenwood_Springs,_Mississippi","distance"))
     # main(start_city, end_city, routing_options, routing_algorithm)
