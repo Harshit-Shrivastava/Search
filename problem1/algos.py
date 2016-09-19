@@ -37,7 +37,23 @@ def dfs_bfs(graph, cities, start_city, end_city, routing_options, algo_flag):
 
 
 def ids(graph, cities, start_city, end_city, routing_options):
-    pass
+    i = 0
+    while True:
+        visited = set()
+        stack = [(start_city, [start_city])]
+        while stack:
+            (city, path) = stack.pop()
+            depth = len(path)
+            if city not in visited:
+                if city == end_city:
+                    return path
+                visited.add(city)
+                if depth > i:
+                    continue
+                for next_city in graph[city]:
+                    stack.append((next_city.end_city.name, path + [
+                        next_city.end_city.name]))
+        i += 1
 
 
 def a_star(graph, cities, start_city, end_city, routing_options):
@@ -52,10 +68,10 @@ def a_star(graph, cities, start_city, end_city, routing_options):
     g[start_city] = 0
     f[start_city] = heuristic(cities, start_city, end_city, routing_options)
     while len(fringe) > 0:
-        min = float('Inf')
+        min_cost = float('Inf')
         for fx in f:
-            if fx in fringe and f[fx] < min:
-                min = f[fx]
+            if fx in fringe and f[fx] < min_cost:
+                min_cost = f[fx]
                 curr = fx
         if curr == end_city:
             return create_path(previous, curr)
@@ -63,14 +79,15 @@ def a_star(graph, cities, start_city, end_city, routing_options):
         path.add(curr)
         for neighbour in graph[curr]:
             if neighbour.end_city.name not in path:
-                tentativeCost = g[curr] + cost(graph, curr, neighbour.end_city.name, routing_options)
+                tentative_cost = g[curr] + cost(graph, curr, neighbour.end_city.name, routing_options)
                 if neighbour.end_city.name not in fringe:
                     fringe.add(neighbour.end_city.name)
-                elif tentativeCost >= g[neighbour.end_city.name]:
+                elif tentative_cost >= g[neighbour.end_city.name]:
                     continue
                 previous[neighbour.end_city.name] = curr
-                g[neighbour.end_city.name] = tentativeCost
-                f[neighbour.end_city.name] = g[neighbour.end_city.name] + heuristic(cities, neighbour.end_city.name, end_city, routing_options)
+                g[neighbour.end_city.name] = tentative_cost
+                f[neighbour.end_city.name] = g[neighbour.end_city.name] + heuristic(cities, neighbour.end_city.name,
+                                                                                    end_city, routing_options)
     return False
 
 
@@ -99,7 +116,6 @@ def cost(graph, start_city, end_city, routing_options):
 
 
 def heuristic(cities, start_city, end_city, routing_options):
-
     if routing_options == "segments":
         return False
     elif routing_options == "time":
@@ -110,17 +126,14 @@ def heuristic(cities, start_city, end_city, routing_options):
         return False
     else:
         return False
-    return False
 
 
 # http://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
 def distance(lat1, lon1, lat2, lon2):
-    p = 0.017453292519943295 # pi/180
-    lat1 = float(lat1)
-    lat2 = float(lat2)
-    lon1 = float(lon1)
-    lon2 = float(lon2)
-    lon1, lat1, lon2, lat2 = map(radians, [lon1, lat1, lon2, lat2])
+    lat1 = radians(float(lat1))
+    lat2 = radians(float(lat2))
+    lon1 = radians(float(lon1))
+    lon2 = radians(float(lon2))
 
     # haversine formula
     dlon = lon2 - lon1
