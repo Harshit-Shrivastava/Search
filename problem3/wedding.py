@@ -1,4 +1,4 @@
-import itertools
+from copy import deepcopy
 
 
 def load_data(file_name):
@@ -31,23 +31,45 @@ def printable(states):
     print len(states), " ".join(",".join(j for j in i) for i in states)
 
 
+def remove_person(state, person, skip_index):
+    for table in state:
+        if state.index(table) != skip_index and person in table:
+            table.remove(person)
+    return state
+
+
 # Should generate only certain number of valid states.
-def successors(state, friends_graph_t):
-    return [[[i] for i in friends_graph_t]]
+# state = [['Emma'],['Joe'],..] for seats = 1
+# state = [['Emma']
+def successors(state, friends_graph_t, everyone, seats):
+    if state == [[]]:
+        return [[[person] for person in everyone]]
+    states = []
+    # Need to generate new states where >2 in a table & shouldn't be friends.
+    for i in everyone:
+        for table in state:
+            state_copy = deepcopy(state)
+            index = state.index(table)
+            if i not in table and all(i in friends_graph_t[j] for j in table):
+                # add person to a new table
+                # remove that person from other table in the state
+                table.append(i)
+                new_state = remove_person(state, i, index)
+                states.append(state)
+    return states
 
 
-def generate_states(initial_state, everyone, friends_graph_t):
+def generate_states(initial_state, everyone, friends_graph_t, seats):
     fringe = [initial_state]
     optimal = [-1, []]
     while len(fringe) > 0:
         state = fringe.pop()
-        for s in successors(state, friends_graph_t):
+        for s in successors(state, friends_graph_t, everyone, seats):
             temp = len(s)
             if optimal[0] == -1 or optimal[0] > temp:
                 optimal[0] = temp
                 optimal[1] = s
             fringe.append(s)
-        break
     return optimal
 
 
@@ -57,4 +79,5 @@ if __name__ == "__main__":
     everyone, friends_graph = load_data(file_name)
     friends_graph_t = transpose(friends_graph, everyone)
     initial_state = [[]]
-    printable(generate_states(initial_state, everyone, friends_graph_t)[1])
+    printable(generate_states(initial_state, everyone, friends_graph_t,
+                              seats_per_table)[1])
