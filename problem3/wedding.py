@@ -41,7 +41,7 @@ def remove_person(s, person, skip_index):
 # Should generate only certain number of valid states.
 # state = [['Emma'],['Joe'],..] for seats = 1
 # state = [['Emma']
-def successors(state, friends_graph_t, everyone, seats, fringe):
+def successors(state, friends_graph_t, everyone, seats):
     if state == [[]]:
         return [[[person] for person in everyone]]
     states = list()
@@ -60,7 +60,7 @@ def successors(state, friends_graph_t, everyone, seats, fringe):
                 x_copy[index].sort()
                 y = remove_person(x_copy, i, index)
                 y.sort()
-                if y not in states and y not in fringe and y != state_copy:
+                if y not in states and y != state_copy:
                     states.append(y)
     return states
 
@@ -68,15 +68,18 @@ def successors(state, friends_graph_t, everyone, seats, fringe):
 def generate_states(initial_state, everyone, friends_graph_t, seats):
     fringe = [initial_state]
     optimal = [-1, []]
+    generated_states = []
     while len(fringe) > 0:
         state = fringe.pop()
-        for s in successors(state, friends_graph_t, everyone, seats, fringe):
+        for s in successors(state, friends_graph_t, everyone, seats):
             temp = len(s)
             if optimal[0] == -1 or optimal[0] > temp:
                 optimal[0] = temp
                 optimal[1] = s
-            if state != s and s not in fringe:
+            if state != s and s not in generated_states:
                 fringe.append(s)
+                # Generated States are never popped.
+                generated_states.append(s)
         # Eliminate fringe elements which has more optimality than current
         # optimal value.
         fringe = [i for i in fringe if len(i) <= optimal[0]]
