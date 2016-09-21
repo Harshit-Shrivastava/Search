@@ -1,64 +1,83 @@
-def read_data():
+from copy import deepcopy
+
+
+def load_data(file_name):
     friends = {}
-    with open('myfriends.txt', 'r') as f:
+    everyone = set([])
+    with open(file_name, 'r') as f:
         for line in f:
-            friends[line.split()[0]] = set(line.split()[1:])
-    temp = set(friends)
-    for person in friends:
-        temp = set(temp | friends[person])
-    for value in temp:
-        if value not in friends:
-            friends[value] = set()
-    for person in friends:
-        for other_person in friends:
-            if person != other_person:
-                if person in friends[other_person]:
-                    friends[person].add(other_person)
-    return friends
+            line_list = line.split()
+            if line_list[0] in friends:
+                friends[line_list[0]].update(set(line_list[1:]))
+            else:
+                friends[line_list[0]] = set(line_list[1:])
+            for i in line_list[1:]:
+                if i not in friends:
+                    friends[i] = set([line_list[0]])
+                else:
+                    friends[i].update(set([line_list[0]]))
+            everyone.update(set(line.split()))
+    return everyone, friends
 
 
-def compute_neighbours(friends, seats_per_table):
-    if seats_per_table < 1:
-        return False
-    elif seats_per_table == 1:
-        return set(friends.keys())
+def transpose(friends_graph, everyone):
+    new_graph = {}
+    for i in friends_graph:
+        new_graph[i] = everyone.difference(friends_graph[i] | set([i]))
+    return new_graph
 
-    tentative_neighbours = {}
-    # tentative stores all ppl who can b seated with a person
-    for person in friends:
-        tentative_neighbours[person] = set()
-    for person in friends:
-        for x in friends:
-            if x != person and x not in friends[person]:
-                tentative_neighbours[person].add(x)
 
-    tables = {}
-    i = 0
-    for person in tentative_neighbours:
-        tables[i] = set(person)
-        # for neighbour in tentative_neighbours[person]:
-            # if
-        i += 1
-    """tables = {}
-    i=0
-    for neighbour in tentative_neighbours:
-        if len(tentative_neighbours[neighbour]) <= seats_per_table-1:
-            print(tentative_neighbours[neighbour],neighbour)
-            tables[i].add(tentative_neighbours[neighbour])
-            tables[i].add(neighbour)
-            i += 1
+def printable(states):
+    print len(states), " ".join(",".join(j for j in i) for i in states)
 
-    print(tables)"""
-    """for neighbour in tentative_neighbours:
-        tables[i] = set(neighbour)
-        for j in range( seats_per_table -1):
-            n = list(neighbour)[j]
-            tables[i].add( n )
-            tentative_neighbours[neighbour].remove(n)
-        i += 1"""
-    # return tables
-    return tentative_neighbours
+
+def remove_person(state, person, skip_index):
+    for table in state:
+        if state.index(table) != skip_index and person in table:
+            table.remove(person)
+    return state
+
+
+# Should generate only certain number of valid states.
+# state = [['Emma'],['Joe'],..] for seats = 1
+# state = [['Emma']
+def successors(state, friends_graph_t, everyone, seats):
+    if state == [[]]:
+        return [[[person] for person in everyone]]
+    states = []
+    # Need to generate new states where >2 in a table & shouldn't be friends.
+    for i in everyone:
+        for table in state:
+            state_copy = deepcopy(state)
+            index = state.index(table)
+            if i not in table and all(i in friends_graph_t[j] for j in table):
+                # add person to a new table
+                # remove that person from other table in the state
+                table.append(i)
+                new_state = remove_person(state, i, index)
+                states.append(state)
+    return states
+
+
+def generate_states(initial_state, everyone, friends_graph_t, seats):
+    fringe = [initial_state]
+    optimal = [-1, []]
+    while len(fringe) > 0:
+        state = fringe.pop()
+        for s in successors(state, friends_graph_t, everyone, seats):
+            temp = len(s)
+            if optimal[0] == -1 or optimal[0] > temp:
+                optimal[0] = temp
+                optimal[1] = s
+            fringe.append(s)
+    return optimal
 
 
 if __name__ == "__main__":
-    print(compute_neighbours(read_data(), 3))
+    seats_per_table = 2
+    file_name = 'myfriends.txt'
+    everyone, friends_graph = load_data(file_name)
+    friends_graph_t = transpose(friends_graph, everyone)
+    initial_state = [[]]
+    printable(generate_states(initial_state, everyone, friends_graph_t,
+                              seats_per_table)[1])

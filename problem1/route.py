@@ -18,15 +18,10 @@
     Bloomington?)
     --
 """
-import sys
-from utils_graph import build_graph
 from algos import best_path
-
+from utils_graph import build_graph
 
 if __name__ == "__main__":
     # start_city, end_city, routing_options, routing_algorithm = sys.argv[1:]
     graph, cities = build_graph()
-    print (best_path(graph, "bfs", "Bloomington,_Indiana",  "Indianapolis,"
-                                                             "_Indiana", ""))
-
-    # main(start_city, end_city, routing_options, routing_algorithm)
+    print(best_path(graph, cities, "ids", "Brenham,_Texas",  "Addicks,_Texas", "distance"))
