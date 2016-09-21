@@ -82,7 +82,8 @@ def generate_states(initial_state, everyone, friends_graph_t, seats):
                 generated_states.append(s)
         # Eliminate fringe elements which has more optimality than current
         # optimal value.
-        fringe = [i for i in fringe if len(i) <= optimal[0]]
+        # Store Optimal values and Optimal+1 values in the fringe just in case.
+        fringe = [i for i in fringe if len(i) <= optimal[0]+1]
     return optimal
 
 
