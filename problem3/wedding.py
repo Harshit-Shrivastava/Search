@@ -31,31 +31,37 @@ def printable(states):
     print len(states), " ".join(",".join(j for j in i) for i in states)
 
 
-def remove_person(state, person, skip_index):
-    for table in state:
-        if state.index(table) != skip_index and person in table:
+def remove_person(s, person, skip_index):
+    for table in s:
+        if s.index(table) != skip_index and person in table:
             table.remove(person)
-    return state
+    return [i for i in s if i != []]
 
 
 # Should generate only certain number of valid states.
 # state = [['Emma'],['Joe'],..] for seats = 1
 # state = [['Emma']
-def successors(state, friends_graph_t, everyone, seats):
+def successors(state, friends_graph_t, everyone, seats, fringe):
     if state == [[]]:
         return [[[person] for person in everyone]]
-    states = []
+    states = list()
     # Need to generate new states where >2 in a table & shouldn't be friends.
+    state_copy = deepcopy(state)
     for i in everyone:
-        for table in state:
-            state_copy = deepcopy(state)
-            index = state.index(table)
-            if i not in table and all(i in friends_graph_t[j] for j in table):
+        for table in state_copy:
+            index = state_copy.index(table)
+            if i not in table and all(i in friends_graph_t[j] for j in table)\
+                    and len(table) < seats:
                 # add person to a new table
                 # remove that person from other table in the state
-                table.append(i)
-                new_state = remove_person(state, i, index)
-                states.append(state)
+                # table.append(i)
+                x_copy = deepcopy(state_copy)
+                x_copy[index].append(i)
+                x_copy[index].sort()
+                y = remove_person(x_copy, i, index)
+                y.sort()
+                if y not in states and y not in fringe and y != state_copy:
+                    states.append(y)
     return states
 
 
@@ -64,17 +70,21 @@ def generate_states(initial_state, everyone, friends_graph_t, seats):
     optimal = [-1, []]
     while len(fringe) > 0:
         state = fringe.pop()
-        for s in successors(state, friends_graph_t, everyone, seats):
+        for s in successors(state, friends_graph_t, everyone, seats, fringe):
             temp = len(s)
             if optimal[0] == -1 or optimal[0] > temp:
                 optimal[0] = temp
                 optimal[1] = s
-            fringe.append(s)
+            if state != s and s not in fringe:
+                fringe.append(s)
+        # Eliminate fringe elements which has more optimality than current
+        # optimal value.
+        fringe = [i for i in fringe if len(i) <= optimal[0]]
     return optimal
 
 
 if __name__ == "__main__":
-    seats_per_table = 2
+    seats_per_table = 4
     file_name = 'myfriends.txt'
     everyone, friends_graph = load_data(file_name)
     friends_graph_t = transpose(friends_graph, everyone)
