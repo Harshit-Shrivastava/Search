@@ -1,8 +1,9 @@
 class FringeElement:
-    def __init__(self, state, costSoFar, heuristic):
+    def __init__(self, state, costSoFar, heuristic, path):
         self.state = state
         self.costSoFar = costSoFar
         self.heuristic = heuristic
+        self.path = path
 
 def fringePriority(FringeElement):
     cost = FringeElement.costSoFar
@@ -10,5 +11,5 @@ def fringePriority(FringeElement):
     priority = cost + heu
     return priority
 
-def createElement(state, cost, heu):
-    return FringeElement(state,cost, heu)
+def createElement(state, cost, heu, path):
+    return FringeElement(state,cost, heu, path)

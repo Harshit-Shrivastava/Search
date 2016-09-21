@@ -1,375 +1,85 @@
-from library import createElement
-from library import fringePriority
+import library
 import sys
 import copy
 
 goalState = [['1','2','3','4'],['5','6','7','8'],['9','10','11','12'],['13','14','15','0']]
 
+
+def move_left(i,j,curState):
+    tempState1 = copy.deepcopy(curState)
+    tempState1[i][j-1], tempState1[i][j] = tempState1[i][j], tempState1[i][j-1]
+    return tempState1
+
+
+def move_up(i,j,curState):
+    tempState1 = copy.deepcopy(curState)
+    tempState1[i][j], tempState1[i-1][j] = tempState1[i-1][j], tempState1[i][j]
+    return tempState1
+
+
+def move_down(i,j,curState):
+    tempState1 = copy.deepcopy(curState)
+    if i == 3:
+        tempState1[i][j], tempState1[0][j] = tempState1[0][j], tempState1[i][j]
+    else:
+        tempState1[i][j], tempState1[i+1][j] = tempState1[i+1][j], tempState1[i][j]
+    return tempState1
+
+
+def move_right(i,j,curState):
+    tempState1 = copy.deepcopy(curState)
+    if j == 3:
+        tempState1[i][0], tempState1[i][j] = tempState1[i][j], tempState1[i][0]
+    else:
+        tempState1[i][j+1], tempState1[i][j] = tempState1[i][j], tempState1[i][j+1]
+    return tempState1
+
+
 def successor(curStateObject):
-    priority, elem = curStateObject
+    elem = curStateObject[1]
     curState = elem.state
-    curCostSoFar = elem.costSoFar
-    curHeuristic = elem.heuristic
     index = indexSearch(curState, '0')
     r = index[0]
     c = index[1]
-    states = set()
-
-    heuristic1 = sys.maxint
-    heuristic2 = sys.maxint
-    heuristic3 = sys.maxint
-    heuristic4 = sys.maxint
-    tempState1 = [[]]
-    tempState2 = [[]]
-    tempState3 = [[]]
-    tempState4 = [[]]
-
-    #TODO: Write the edge conditions where the empty tile can move only in 2 or 3 positions
-    if(r == 0 and c == 0):
-        # moving left
-        tempState1 = copy.deepcopy(curState)
-        tempState1[0][0], tempState1[0][3] = tempState1[0][3], tempState1[0][0]
-        heuristic1 = heuristicCalculator(tempState1, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState1
-        states.add(tempElem)
-
-        # moving up
-        tempState2 = copy.deepcopy(curState)
-        tempState2[0][0], tempState2[3][0] = tempState2[3][0], tempState2[0][0]
-        heuristic2 = heuristicCalculator(tempState2, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState2
-        states.add(tempElem)
-
-        # moving down
-        tempState3 = copy.deepcopy(curState)
-        tempState3[r][c], tempState3[r+1][c] = tempState3[r+1][c], tempState3[r][c]
-        heuristic3 = heuristicCalculator(tempState3, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState3
-        states.add(tempElem)
-
-        # moving right
-        tempState4 = copy.deepcopy(curState)
-        tempState4[r][c], tempState4[r][c+1] = tempState4[r][c+1], tempState4[r][c]
-        heuristic4 = heuristicCalculator(tempState4, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState4
-        states.add(tempElem)
-
-    elif(r == 3 and c == 0):
-        # moving left
-        tempState1 = copy.deepcopy(curState)
-        tempState1[3][0], tempState1[3][3] = tempState1[3][3], tempState1[3][0]
-        heuristic1 = heuristicCalculator(tempState1, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState2
-        states.add(tempElem)
-
-        # moving up
-        tempState2 = copy.deepcopy(curState)
-        tempState2[r][c], tempState2[r-1][c] = tempState2[r-1][c], tempState2[r][c]
-        heuristic2 = heuristicCalculator(tempState2, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState2
-        states.add(tempElem)
-
-        # moving down
-        tempState3 = copy.deepcopy(curState)
-        tempState3[3][0], tempState3[0][0] = tempState3[0][3], tempState3[3][0]
-        heuristic3 = heuristicCalculator(tempState3, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState3
-        states.add(tempElem)
-
-        # moving right
-        tempState4 = copy.deepcopy(curState)
-        tempState4[r][c], tempState4[r][c+1] = tempState4[r][c+1], tempState4[r][c]
-        heuristic4 = heuristicCalculator(tempState4, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState4
-        states.add(tempElem)
-
-    elif(r == 0 and c == 3):
-        # moving left
-        tempState1 = copy.deepcopy(curState)
-        tempState1[r][c], tempState1[r][c-1] = tempState1[r][c-1], tempState1[r][c]
-        heuristic1 = heuristicCalculator(tempState1, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState1
-        states.add(tempElem)
-
-        # moving up
-        tempState2 = copy.deepcopy(curState)
-        tempState2[0][3], tempState2[3][3] = tempState2[3][3], tempState2[0][3]
-        heuristic2 = heuristicCalculator(tempState2, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState2
-        states.add(tempElem)
-
-        # moving down
-        tempState3 = copy.deepcopy(curState)
-        tempState3[r][c], tempState3[r+1][c] = tempState3[r+1][c], tempState3[r][c]
-        heuristic3 = heuristicCalculator(tempState3, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState3
-        states.add(tempElem)
-
-        # moving right
-        tempState4 = copy.deepcopy(curState)
-        tempState4[0][3], tempState4[0][0] = tempState4[0][0], tempState4[0][3]
-        heuristic4 = heuristicCalculator(tempState4, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState4
-        states.add(tempElem)
-
-    elif(r == 3 and c == 3):
-        # moving left
-        tempState1 = copy.deepcopy(curState)
-        tempState1[r][c], tempState1[r][c-1] = tempState1[r][c-1], tempState1[r][c]
-        heuristic1 = heuristicCalculator(tempState1, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState1
-        states.add(tempElem)
-
-        # moving up
-        tempState2 = copy.deepcopy(curState)
-        tempState2[r][c], tempState2[r-1][c] = tempState2[r-1][c], tempState2[r][c]
-        heuristic2 = heuristicCalculator(tempState2, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState2
-        states.add(tempElem)
-
-        # moving down
-        tempState3 = copy.deepcopy(curState)
-        tempState3[3][3], tempState3[0][3] = tempState3[0][3], tempState3[3][3]
-        heuristic3 = heuristicCalculator(tempState3, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState3
-        states.add(tempElem)
-
-        # moving right
-        tempState4 = copy.deepcopy(curState)
-        tempState4[3][3], tempState4[3][0] = tempState4[3][0], tempState4[3][3]
-        heuristic4 = heuristicCalculator(tempState4, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState4
-        states.add(tempElem)
-
-    elif(r == 0):
-        # moving left
-        tempState1 = copy.deepcopy(curState)
-        tempState1[r][c], tempState1[r][c-1] = tempState1[r][c-1], tempState1[r][c]
-        heuristic1 = heuristicCalculator(tempState1, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState1
-        states.add(tempElem)
-
-        # moving up
-        #tempState2 = curState
-        #tempState2[x][y], tempState2[x][y - 1] = tempState2[x][y - 1], tempState2[x][y]
-        #heuristic2 = heuristicCalculator(tempState2, goalState)
-
-        # moving down
-        tempState3 = copy.deepcopy(curState)
-        tempState3[r][c], tempState3[r+1][c] = tempState3[r+1][c], tempState3[r][c]
-        heuristic3 = heuristicCalculator(tempState3, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState3
-        states.add(tempElem)
-
-        # moving right
-        tempState4 = copy.deepcopy(curState)
-        tempState4[r][c], tempState4[r][c+1] = tempState4[r][c+1], tempState4[r][c]
-        heuristic4 = heuristicCalculator(tempState4, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState4
-        states.add(tempElem)
-
-    elif(r == 3):
-        # moving left
-        tempState1 = copy.deepcopy(curState)
-        tempState1[r][c], tempState1[r][c-1] = tempState1[r][c-1], tempState1[r][c]
-        heuristic1 = heuristicCalculator(tempState1, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState1
-        states.add(tempElem)
-
-        # moving up
-        tempState2 = copy.deepcopy(curState)
-        tempState2[r][c], tempState2[r-1][c] = tempState2[r-1][c], tempState2[r][c]
-        heuristic2 = heuristicCalculator(tempState2, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState2
-        states.add(tempElem)
-
-        # moving down
-        #tempState3 = curState
-        #tempState3[x][y], tempState3[x][y + 1] = tempState3[x][y + 1], tempState3[x][y]
-        #heuristic3 = heuristicCalculator(tempState3, goalState)
-
-        # moving right
-        tempState4 = copy.deepcopy(curState)
-        tempState4[r][c], tempState4[r][c+1] = tempState4[r][c+1], tempState4[r][c]
-        heuristic4 = heuristicCalculator(tempState4, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState4
-        states.add(tempElem)
-
-    elif(c == 0):
-        # moving left
-        #tempState1 = curState
-        #tempState1[x][y], tempState1[x - 1][y] = tempState1[x - 1][y], tempState1[x][y]
-        #heuristic1 = heuristicCalculator(tempState1, goalState)
-
-        # moving up
-        tempState2 = copy.deepcopy(curState)
-        tempState2[r][c], tempState2[r-1][c] = tempState2[r-1][c], tempState2[r][c]
-        heuristic2 = heuristicCalculator(tempState2, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState2
-        states.add(tempElem)
-
-        # moving down
-        tempState3 = copy.deepcopy(curState)
-        tempState3[r][c], tempState3[r+1][c] = tempState3[r+1][c], tempState3[r][c]
-        heuristic3 = heuristicCalculator(tempState3, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState3
-        states.add(tempElem)
-
-        # moving right
-        tempState4 = copy.deepcopy(curState)
-        tempState4[r][c], tempState4[r][c+1] = tempState4[r][c+1], tempState4[r][c]
-        heuristic4 = heuristicCalculator(tempState4, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState4
-        states.add(tempElem)
-
-    elif(c == 3):
-        # moving left
-        tempState1 = copy.deepcopy(curState)
-        tempState1[r][c], tempState1[r][c-1] = tempState1[r][c-1], tempState1[r][c]
-        heuristic1 = heuristicCalculator(tempState1, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState1
-        states.add(tempElem)
-
-        # moving up
-        tempState2 = copy.deepcopy(curState)
-        tempState2[r][c], tempState2[r-1][c] = tempState2[r-1][c], tempState2[r][c]
-        heuristic2 = heuristicCalculator(tempState2, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState2
-        states.add(tempElem)
-
-        # moving down
-        tempState3 = copy.deepcopy(curState)
-        tempState3[r][c], tempState3[r+1][c] = tempState3[r+1][c], tempState3[r][c]
-        heuristic3 = heuristicCalculator(tempState3, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState3
-        states.add(tempElem)
-
-        # moving right
-        #tempState4 = curState
-        #tempState4[x][y], tempState4[x + 1][y] = tempState4[x + 1][y], tempState4[x][y]
-        #heuristic4 = heuristicCalculator(tempState4, goalState)
-
-    else:
-        #thinking the regular cases first
-        #moving left
-        tempState1 = copy.deepcopy(curState)
-        tempState1[r][c], tempState1[r][c-1] = tempState1[r][c-1], tempState1[r][c]
-        heuristic1 = heuristicCalculator(tempState1, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState1
-        states.add(tempElem)
-
-        #moving up
-        tempState2 = copy.deepcopy(curState)
-        tempState2[r][c], tempState2[r-1][c] = tempState2[r-1][c], tempState2[r][c]
-        heuristic2 = heuristicCalculator(tempState2, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState2
-        states.add(tempElem)
-
-        #moving down
-        tempState3 = copy.deepcopy(curState)
-        tempState3[r][c], tempState3[r+1][c] = tempState3[r+1][c], tempState3[r][c]
-        heuristic3 = heuristicCalculator(tempState3, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState3
-        states.add(tempElem)
-
-        #moving right
-        tempState4 = copy.deepcopy(curState)
-        tempState4[r][c], tempState4[r][c+1] = tempState4[r][c+1], tempState4[r][c]
-        heuristic4 = heuristicCalculator(tempState4, goalState)
-        tempElem = copy.deepcopy(elem)
-        tempElem.state = tempState4
-        states.add(tempElem)
-
-    #bestMove = min (heuristic1, heuristic2, heuristic3, heuristic4)
-    #move = ''
-    #if(bestMove == heuristic1):
-    #    curState = tempState1
-    #    move = 'L'
-    #elif(bestMove == heuristic2):
-    #    curState = tempState2
-    #    move = 'U'
-    #elif(bestMove == heuristic3):
-    #    curState = tempState3
-    #    move = 'D'
-    #else:
-    #    curState = tempState4
-    #    move = 'R'
-    #elem.state = curState
+    states = list()
+    path1 = elem.path.copy()
+    path1.append("D")
+    states.append(library.FringeElement(move_down(r, c, curState),elem.costSoFar,elem.heuristic, path1))
+    path2 = elem.path.copy()
+    path2.append("L")
+    states.append(library.FringeElement(move_left(r, c, curState),elem.costSoFar,elem.heuristic, path2))
+    path3 = elem.path.copy()
+    path3.append("U")
+    states.append(library.FringeElement(move_up(r, c, curState),elem.costSoFar,elem.heuristic, path3))
+    path4 = elem.path.copy()
+    path4.append("R")
+    states.append(library.FringeElement(move_right(r, c, curState),elem.costSoFar,elem.heuristic, path4))
     return states
 
 def aStar(curSquare):
     heuristic = heuristicCalculator(curSquare, goalState)
-    #if initial and goal states are the same, return the initial state
-    #this means that the square is already solved
     if (curSquare == goalState):
         return curSquare
-
-    #if not, implement fringe as a priority queue and run A* search on it
-
-    #creating a priority queue in python
-    #example studied from http://www.bogotobogo.com/python/python_PriorityQueue_heapq_Data_Structure.php
-    try:
-        import Queue as Q
-    except ImportError:
-        import queue as Q
-    fringe = Q.PriorityQueue()
-    #example from the blog ends here
-
-    #create an object to store the state, cost, heuristic, etc.
-    tempFringeElem = createElement(curSquare,0,heuristic)
-    tempFringePri = fringePriority(tempFringeElem)
-    fringe.put((tempFringePri, tempFringeElem))
-    #priority, elem = fringe.get()
-    #print (elem).heuristic
-
-    #creating a hash table as a dictionary to implement CLOSED
-    while not fringe.empty():
-        for s in successor(fringe.get()):
-            #elem = s
+    fringe = list()
+    tempFringeElem = library.createElement(curSquare,0,heuristic,[])
+    tempFringePri = library.fringePriority(tempFringeElem)
+    fringe.append([tempFringePri, tempFringeElem])
+    while len(fringe) > 0:
+        min = float('inf')
+        for element in fringe:
+            if element[0] < min:
+                min = element[0]
+                minElement = element
+        for s in successor(fringe.pop(fringe.index(minElement))):
             if s.state == goalState:
-                return True
-            cost = s.costSoFar + 1
-            heuristic = heuristicCalculator(s.state, goalState)
-            s.costSoFar = cost
-            s.heuristic = heuristic
-            tempFringePri = fringePriority(s)
-            #TODO: print move
-            fringe.put(tempFringePri, s)
+                return s.path
+            s.costSoFar = s.costSoFar + 1
+            s.heuristic = heuristicCalculator(s.state, goalState)
+            tempFringePri = library.fringePriority(s)
+            fringe.append([tempFringePri, s])
     return False
 
 #function to find position of an element in an 2D list
-#code from http://stackoverflow.com/questions/6518291/using-index-on-multidimensional-lists
 def indexSearch(curState, elem):
     for row, i in enumerate(curState):
         try:
@@ -378,7 +88,6 @@ def indexSearch(curState, elem):
             continue
         return row, column
     return -1
-#code from stackoverflow.com ends here
 
 #this function calculates the heuristic for the a-star algorithm
 #heuristic is taken as the manhattan distance between the current position of the
