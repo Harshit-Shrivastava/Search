@@ -1,3 +1,4 @@
+from math import sqrt
 import library
 import sys
 import copy
@@ -101,7 +102,6 @@ def index_search(cur_state, elem):
 
 
 # this function calculates the heuristic for the a-star algorithm
-# heuristic is taken as the manhattan distance between the current position of the
 def heuristic_calculator(square, goal_state):
     heuristic = heuristic_helper(square, goal_state)
     index = index_search(square, "0")
@@ -120,6 +120,7 @@ def heuristic_calculator(square, goal_state):
     return heuristic
 
 
+# heuristic is taken as the manhattan distance between the current position of the
 def heuristic_helper(square, goal_state):
     heuristic = 0
     for i in range(0, 4):
@@ -128,4 +129,24 @@ def heuristic_helper(square, goal_state):
             index = index_search(goal_state, temp)
             cur_manhattan_distance = abs(index[0] - i) + abs(index[1] - j)
             heuristic = heuristic + cur_manhattan_distance
+    return heuristic
+
+
+def heuristic_helper_euclid(square, goal_state):
+    heuristic = 0
+    for i in range(0, 4):
+        for j in range(0, 4):
+            temp = square[i][j]
+            index = index_search(goal_state, temp)
+            cur_manhattan_distance = sqrt((index[0] - i)**2 + (index[1] - j)**2)
+            heuristic = heuristic + cur_manhattan_distance
+    return heuristic
+
+
+def heuristic_helper_displaced(square, goal_state):
+    heuristic = 0
+    for i in range(0, 4):
+        for j in range(0, 4):
+            if square[i][j] != goal_state[i][j]:
+                heuristic += 1
     return heuristic
