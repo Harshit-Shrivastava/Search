@@ -11,30 +11,37 @@ from math import radians, cos, sin, asin, sqrt
 
 def best_path(graph, cities, algo, start_city, end_city, routing_options):
     if algo.lower() == "dfs":
-        path = dfs_bfs(graph, cities, start_city, end_city, routing_options, -1)
+        path = dfs_bfs(graph, start_city, end_city, routing_options, -1)
     elif algo.lower() == "bfs":
-        path = dfs_bfs(graph, cities, start_city, end_city, routing_options, 0)
+        path = dfs_bfs(graph, start_city, end_city, routing_options, 0)
     elif algo.lower() == "ids":
         path = ids(graph, cities, start_city, end_city, routing_options)
     elif algo.lower() == "astar":
         path = a_star(graph, cities, start_city, end_city, routing_options)
     else:
         return False
-    return calc_distance(path, graph), calc_time(path, graph), calc_seg(path), path
+    return calc_distance(path, graph), calc_time(path, graph), calc_seg(
+        path), path
 
 
-def dfs_bfs(graph, cities, start_city, end_city, routing_options, algo_flag):
+def dfs_bfs(graph, start_city, end_city, routing_options, algo_option):
     stack = [(start_city, [start_city])]
     visited = set()
     while stack:
-        (city, path) = stack.pop(algo_flag)
+        (city, path) = stack.pop(algo_option)
         if city not in visited:
             if city == end_city:
                 return path
-            visited.add(city)
+            temp_stack = []
             for next_city in graph[city]:
-                stack.append((next_city.end_city.name, path + [
-                    next_city.end_city.name]))
+                temp_cost = cost(graph, city, next_city.end_city.name,
+                                 routing_options)
+                temp_stack.append((next_city.end_city.name, path+[
+                    next_city.end_city.name], temp_cost))
+            # At each level get the cost from option and sort based on that.
+            temp_stack.sort(key=lambda x: x[2])
+            temp_stack = [(i, j) for i, j, k in temp_stack]
+            stack.extend(temp_stack)
 
 
 def ids(graph, cities, start_city, end_city, routing_options):
@@ -103,6 +110,18 @@ def create_path(previous, curr):
     return path[::-1]
 
 
+def sort_option(temp, option):
+    if option == "segments":
+        return temp
+    elif option == "time":
+        temp.sort(key=lambda x: x[2])
+    elif option == "distance":
+        temp.sort(key=lambda x: x[2])
+    elif option == "scenic":
+        temp.sort(key=lambda x: x[2])
+    return temp
+
+
 def cost(graph, start_city, end_city, routing_options):
     if routing_options == "segments":
         return 1
@@ -110,7 +129,7 @@ def cost(graph, start_city, end_city, routing_options):
         for seg in graph[start_city]:
             if seg.end_city == end_city:
                 if seg.limit != 0:
-                    return seg.distance/seg.limit
+                    return (seg.distance * 1.0)/seg.limit
                 return seg.distance
     elif routing_options == "distance":
         for seg in graph[start_city]:
@@ -156,7 +175,8 @@ def distance(lat1, lon1, lat2, lon2):
     r = 3956  # Radius of earth 3956 miles
     return c * r
 
-    # if we find the equation of the line betwn strt n end then whatever city is on the line
+    # if we find the equation of the line betwn strt n end
+    # then whatever city is on the line
     # acc to that heuristic of min no of edges can b found
 
 
@@ -175,10 +195,10 @@ def calc_time(path, graph):
     for i in range(len(path)-1):
         for city in graph[path[i]]:
             if city.end_city.name == path[i+1]:
-                if city.limit!=0:
-                    time = time + (city.distance/city.limit)
+                if city.limit != 0:
+                    time += (city.distance*1.0/city.limit)
                 break
-    return time
+    return round(time,4)
 
 
 def calc_seg(path):
