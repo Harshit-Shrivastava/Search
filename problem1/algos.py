@@ -71,7 +71,7 @@ def ids(graph, cities, start_city, end_city, routing_options):
                                      routing_options)
                     temp_stack.append((next_city.end_city.name, path + [
                         next_city.end_city.name], temp_cost))
-                temp_stack.sort(key=lambda x: x[2], reverse=True)
+                temp_stack.sort(key=lambda x: x[2])
                 temp_stack = [(i, j) for i, j, k in temp_stack]
                 stack.extend(temp_stack)
             elif visited[city] > depth:
