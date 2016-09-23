@@ -1,10 +1,11 @@
 """
 routing_options =
-- segments finds a route with the fewest number of \turns" (i.e. edges of the graph)
+- segments finds a route with the fewest number of \turns"
+    (i.e. edges of the graph)
 - distance finds a route with the shortest total distance
 - time finds the fastest route, for a car that always travels at the speed limit
-- scenic finds the route having the least possible distance spent on highways (which we define
-as roads with speed limits 55 mph or greater)
+- scenic finds the route having the least possible distance spent on highways
+    (which we define as roads with speed limits 55 mph or greater)
 """
 from math import radians, cos, sin, asin, sqrt
 
@@ -38,8 +39,13 @@ def dfs_bfs(graph, start_city, end_city, routing_options, algo_option):
                                  routing_options)
                 temp_stack.append((next_city.end_city.name, path+[
                     next_city.end_city.name], temp_cost))
-            # At each level get the cost from option and sort based on that.
-            temp_stack.sort(key=lambda x: x[2])
+            # At each level get the cost from option and sort based on cost.
+            if algo_option == 0:
+                # BFS Sort in the right order for stack to pick up.
+                temp_stack.sort(key=lambda x: x[2])
+            else:
+                # DFS Sort in reverse order for stack to pick up.
+                temp_stack.sort(key=lambda x: x[2], reverse=True)
             temp_stack = [(i, j) for i, j, k in temp_stack]
             stack.extend(temp_stack)
 
@@ -50,7 +56,7 @@ def ids(graph, cities, start_city, end_city, routing_options):
         visited = dict()
         stack = [(start_city, [start_city])]
         while stack:
-            (city, path) = stack.pop()
+            (city, path) = stack.pop(0)
             depth = len(path)
             if city not in visited.keys():
                 if city == end_city:
@@ -58,11 +64,17 @@ def ids(graph, cities, start_city, end_city, routing_options):
                 visited[city] = depth
                 if depth > i:
                     continue
+                temp_stack = []
                 for next_city in graph[city]:
-                    stack.append((next_city.end_city.name, path + [
-                        next_city.end_city.name]))
+                    temp_cost = cost(graph, city, next_city.end_city.name,
+                                     routing_options)
+                    temp_stack.append((next_city.end_city.name, path + [
+                        next_city.end_city.name], temp_cost))
+                temp_stack.sort(key=lambda x: x[2], reverse=True)
+                temp_stack = [(i, j) for i, j, k in temp_stack]
+                stack.extend(temp_stack)
             elif visited[city] > depth:
-                stack.append((city,path))
+                stack.append((city, path))
                 visited.pop(city)
         i += 1
 
@@ -198,7 +210,7 @@ def calc_time(path, graph):
                 if city.limit != 0:
                     time += (city.distance*1.0/city.limit)
                 break
-    return round(time,4)
+    return round(time, 4)
 
 
 def calc_seg(path):
