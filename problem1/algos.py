@@ -34,6 +34,7 @@ def dfs_bfs(graph, start_city, end_city, routing_options, algo_option):
             if city == end_city:
                 return path
             temp_stack = []
+            visited.add(city)
             for next_city in graph[city]:
                 temp_cost = cost(graph, city, next_city.end_city.name,
                                  routing_options)
@@ -120,18 +121,6 @@ def create_path(previous, curr):
         curr = previous[curr]
         path.append(curr)
     return path[::-1]
-
-
-def sort_option(temp, option):
-    if option == "segments":
-        return temp
-    elif option == "time":
-        temp.sort(key=lambda x: x[2])
-    elif option == "distance":
-        temp.sort(key=lambda x: x[2])
-    elif option == "scenic":
-        temp.sort(key=lambda x: x[2])
-    return temp
 
 
 def cost(graph, start_city, end_city, routing_options):

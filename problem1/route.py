@@ -25,8 +25,8 @@ from utils_graph import build_graph
 if __name__ == "__main__":
     # start_city, end_city, routing_options, routing_algorithm = sys.argv[1:]
     graph, cities = build_graph()
-    result = best_path(graph, cities, "bfs", "Bloomington,_Indiana",
-                     "Weed,_California", "segments")
+    result = best_path(graph, cities, "dfs", "Bloomington,_Indiana",
+                     "Indianapolis,_Indiana", "distance")
     if result:
         print " ".join(str(i) for i in result[:2] if type(i) != str),  \
             " ".join(str(i) for i in result[3])
