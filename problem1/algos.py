@@ -57,7 +57,7 @@ def ids(graph, cities, start_city, end_city, routing_options):
         visited = dict()
         stack = [(start_city, [start_city])]
         while stack:
-            (city, path) = stack.pop(0)
+            (city, path) = stack.pop(-1)
             depth = len(path)
             if city not in visited.keys():
                 if city == end_city:
@@ -71,8 +71,8 @@ def ids(graph, cities, start_city, end_city, routing_options):
                                      routing_options)
                     temp_stack.append((next_city.end_city.name, path + [
                         next_city.end_city.name], temp_cost))
-                temp_stack.sort(key=lambda x: x[2])
-                temp_stack = [(i, j) for i, j, k in temp_stack]
+                temp_stack.sort(key=lambda x: x[2], reverse=True)
+                temp_stack = [(x, y) for x, y, z in temp_stack]
                 stack.extend(temp_stack)
             elif visited[city] > depth:
                 stack.append((city, path))
