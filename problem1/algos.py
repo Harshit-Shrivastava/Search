@@ -11,15 +11,16 @@ from math import radians, cos, sin, asin, sqrt
 
 def best_path(graph, cities, algo, start_city, end_city, routing_options):
     if algo.lower() == "dfs":
-        return dfs_bfs(graph, cities, start_city, end_city, routing_options, -1)
+        path = dfs_bfs(graph, cities, start_city, end_city, routing_options, -1)
     elif algo.lower() == "bfs":
-        return dfs_bfs(graph, cities, start_city, end_city, routing_options, 0)
+        path = dfs_bfs(graph, cities, start_city, end_city, routing_options, 0)
     elif algo.lower() == "ids":
-        return ids(graph, cities, start_city, end_city, routing_options)
+        path = ids(graph, cities, start_city, end_city, routing_options)
     elif algo.lower() == "astar":
-        return a_star(graph, cities, start_city, end_city, routing_options)
+        path = a_star(graph, cities, start_city, end_city, routing_options)
     else:
         return False
+    return calc_distance(path, graph), calc_time(path, graph), calc_seg(path), path
 
 
 def dfs_bfs(graph, cities, start_city, end_city, routing_options, algo_flag):
@@ -39,20 +40,23 @@ def dfs_bfs(graph, cities, start_city, end_city, routing_options, algo_flag):
 def ids(graph, cities, start_city, end_city, routing_options):
     i = 0
     while True:
-        visited = set()
+        visited = dict()
         stack = [(start_city, [start_city])]
         while stack:
             (city, path) = stack.pop()
             depth = len(path)
-            if city not in visited:
+            if city not in visited.keys():
                 if city == end_city:
                     return path
-                visited.add(city)
+                visited[city] = depth
                 if depth > i:
                     continue
                 for next_city in graph[city]:
                     stack.append((next_city.end_city.name, path + [
                         next_city.end_city.name]))
+            elif visited[city] > depth:
+                stack.append((city,path))
+                visited.pop(city)
         i += 1
 
 
@@ -96,20 +100,29 @@ def create_path(previous, curr):
     while curr in previous:
         curr = previous[curr]
         path.append(curr)
-    return path
+    return path[::-1]
 
 
 def cost(graph, start_city, end_city, routing_options):
     if routing_options == "segments":
-        return False
+        return 1
     elif routing_options == "time":
-        return False
+        for seg in graph[start_city]:
+            if seg.end_city == end_city:
+                if seg.limit != 0:
+                    return seg.distance/seg.limit
+                return seg.distance
     elif routing_options == "distance":
         for seg in graph[start_city]:
             if seg.end_city == end_city:
                 return seg.distance
     elif routing_options == "scenic":
-        return False
+        for seg in graph[start_city]:
+            if seg.end_city == end_city:
+                if seg.limit >= 55:
+                    return 2
+                else:
+                    return 1
     else:
         return False
     return False
@@ -117,13 +130,13 @@ def cost(graph, start_city, end_city, routing_options):
 
 def heuristic(cities, start_city, end_city, routing_options):
     if routing_options == "segments":
-        return False
+        return distance(cities[start_city].lat, cities[start_city].long, cities[end_city].lat, cities[end_city].long)
     elif routing_options == "time":
-        return False
+        return distance(cities[start_city].lat, cities[start_city].long, cities[end_city].lat, cities[end_city].long)
     elif routing_options == "distance":
         return distance(cities[start_city].lat, cities[start_city].long, cities[end_city].lat, cities[end_city].long)
     elif routing_options == "scenic":
-        return False
+        return distance(cities[start_city].lat, cities[start_city].long, cities[end_city].lat, cities[end_city].long)
     else:
         return False
 
@@ -140,5 +153,33 @@ def distance(lat1, lon1, lat2, lon2):
     dlat = lat2 - lat1
     a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
     c = 2 * asin(sqrt(a))
-    r = 3956  # Radius of earth 6371 for kilometers. 3956 for miles
+    r = 3956  # Radius of earth 3956 miles
     return c * r
+
+    # if we find the equation of the line betwn strt n end then whatever city is on the line
+    # acc to that heuristic of min no of edges can b found
+
+
+def calc_distance(path, graph):
+    dist = 0
+    for i in range(len(path)-1):
+        for city in graph[path[i]]:
+            if city.end_city.name == path[i+1]:
+                dist = dist + city.distance
+                break
+    return dist
+
+
+def calc_time(path, graph):
+    time = 0
+    for i in range(len(path)-1):
+        for city in graph[path[i]]:
+            if city.end_city.name == path[i+1]:
+                if city.limit!=0:
+                    time = time + (city.distance/city.limit)
+                break
+    return time
+
+
+def calc_seg(path):
+    return len(path) - 1

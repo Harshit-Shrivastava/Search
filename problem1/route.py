@@ -21,7 +21,16 @@
 from algos import best_path
 from utils_graph import build_graph
 
+
 if __name__ == "__main__":
     # start_city, end_city, routing_options, routing_algorithm = sys.argv[1:]
     graph, cities = build_graph()
-    print(best_path(graph, cities, "ids", "Brenham,_Texas",  "Addicks,_Texas", "distance"))
+    #print(),
+    #print(path[1]),
+    print(best_path(graph, cities, "astar", "Weed,_California",  "Philadelphia,_Pennsylvania", "scenic"))
+    print(best_path(graph, cities, "astar", "Weed,_California",  "Philadelphia,_Pennsylvania", "distance"))
+    print(best_path(graph, cities, "astar", "Weed,_California",  "Philadelphia,_Pennsylvania", "time"))
+    print(best_path(graph, cities, "astar","Weed,_California",  "Philadelphia,_Pennsylvania", "segments"))
+    print(best_path(graph, cities, "dfs", "Weed,_California",  "Philadelphia,_Pennsylvania", "scenic"))
+    print(best_path(graph, cities, "bfs", "Weed,_California",  "Philadelphia,_Pennsylvania", "distance"))
+    print(best_path(graph, cities, "ids", "Weed,_California",  "Philadelphia,_Pennsylvania", "time"))
