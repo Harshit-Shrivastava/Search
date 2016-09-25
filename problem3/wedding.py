@@ -1,4 +1,5 @@
 from copy import deepcopy
+import sys
 
 
 def load_data(file_name):
@@ -88,10 +89,9 @@ def generate_states(initial_state, everyone, friends_graph_t, seats):
 
 
 if __name__ == "__main__":
-    seats_per_table = 4
-    file_name = 'myfriends.txt'
+    file_name, seats_per_table = sys.argv[1:]
     everyone, friends_graph = load_data(file_name)
     friends_graph_t = transpose(friends_graph, everyone)
     initial_state = [[]]
     printable(generate_states(initial_state, everyone, friends_graph_t,
-                              seats_per_table)[1])
+                              int(seats_per_table))[1])
