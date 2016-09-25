@@ -10,15 +10,15 @@ routing_options =
 from math import radians, cos, sin, asin, sqrt
 
 
-def best_path(graph, cities, algo, start_city, end_city, routing_options):
+def best_path(graph, cities, algo, start_city, end_city, routing_options, max_limit):
     if algo.lower() == "dfs":
         path = dfs_bfs(graph, start_city, end_city, routing_options, -1)
     elif algo.lower() == "bfs":
         path = dfs_bfs(graph, start_city, end_city, routing_options, 0)
     elif algo.lower() == "ids":
-        path = ids(graph, cities, start_city, end_city, routing_options)
+        path = ids(graph, start_city, end_city, routing_options)
     elif algo.lower() == "astar":
-        path = a_star(graph, cities, start_city, end_city, routing_options)
+        path = a_star(graph, cities, start_city, end_city, routing_options, max_limit)
     else:
         return False
     return calc_distance(path, graph), calc_time(path, graph), calc_seg(
@@ -51,7 +51,7 @@ def dfs_bfs(graph, start_city, end_city, routing_options, algo_option):
             stack.extend(temp_stack)
 
 
-def ids(graph, cities, start_city, end_city, routing_options):
+def ids(graph, start_city, end_city, routing_options):
     i = 0
     while True:
         visited = dict()
@@ -71,7 +71,7 @@ def ids(graph, cities, start_city, end_city, routing_options):
                                      routing_options)
                     temp_stack.append((next_city.end_city.name, path + [
                         next_city.end_city.name], temp_cost))
-                temp_stack.sort(key=lambda x: x[2], reverse=True)
+                temp_stack.sort(key=lambda a: a[2], reverse=True)
                 temp_stack = [(x, y) for x, y, z in temp_stack]
                 stack.extend(temp_stack)
             elif visited[city] > depth:
@@ -80,7 +80,7 @@ def ids(graph, cities, start_city, end_city, routing_options):
         i += 1
 
 
-def a_star(graph, cities, start_city, end_city, routing_options):
+def a_star(graph, cities, start_city, end_city, routing_options, max_limit):
     if start_city == end_city:
         return [start_city]
     path = set()
@@ -90,7 +90,8 @@ def a_star(graph, cities, start_city, end_city, routing_options):
     g = dict()
     f = dict()
     g[start_city] = 0
-    f[start_city] = heuristic(cities, start_city, end_city, routing_options)
+    f[start_city] = heuristic(cities, start_city, end_city, routing_options,
+                              graph, max_limit)
     while len(fringe) > 0:
         min_cost = float('Inf')
         for fx in f:
@@ -111,7 +112,7 @@ def a_star(graph, cities, start_city, end_city, routing_options):
                 previous[neighbour.end_city.name] = curr
                 g[neighbour.end_city.name] = tentative_cost
                 f[neighbour.end_city.name] = g[neighbour.end_city.name] + heuristic(cities, neighbour.end_city.name,
-                                                                                    end_city, routing_options)
+                                                                                    end_city, routing_options, graph, max_limit)
     return False
 
 
@@ -148,17 +149,46 @@ def cost(graph, start_city, end_city, routing_options):
     return False
 
 
-def heuristic(cities, start_city, end_city, routing_options):
+def heuristic(cities, start_city, end_city, routing_options, graph, max_limit):
+    distance_ = get_distance(start_city, cities, end_city, graph)
+    if distance_ is None:
+        distance_ = 0
     if routing_options == "segments":
-        return distance(cities[start_city].lat, cities[start_city].long, cities[end_city].lat, cities[end_city].long)
+        return distance_
     elif routing_options == "time":
-        return distance(cities[start_city].lat, cities[start_city].long, cities[end_city].lat, cities[end_city].long)
+        return distance_ * 1.0 / max_limit
     elif routing_options == "distance":
-        return distance(cities[start_city].lat, cities[start_city].long, cities[end_city].lat, cities[end_city].long)
+        return distance_
     elif routing_options == "scenic":
-        return distance(cities[start_city].lat, cities[start_city].long, cities[end_city].lat, cities[end_city].long)
+        return distance_
     else:
         return False
+
+
+def get_distance(start_city, cities, end_city, graph):
+    if check_lat_long(start_city, cities):
+        return distance(cities[start_city].lat, cities[start_city].long,
+                        cities[end_city].lat, cities[end_city].long)
+    else:
+        temp = get_city(start_city, graph, cities)
+        if temp:
+            return distance(cities[temp[1].end_city.name].lat, cities[
+                temp[1].end_city.name].long,
+                            cities[end_city].lat, cities[end_city].long) \
+                   + temp[1].distance
+
+
+def get_city(city, graph, cities):
+    for neighbour in graph[city]:
+        if check_lat_long(neighbour.end_city.name, cities):
+            return city, neighbour
+    return False
+
+
+def check_lat_long(city, cities):
+    if cities[city].lat == 0 or cities[city].long == 0:
+        return False
+    return True
 
 
 # http://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula

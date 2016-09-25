@@ -7,6 +7,7 @@ def build_graph():
     # Cities = { "A" (str) : city object }
     graph = {}
     cities = {}
+    max_limit = 0
     with open('road-segments.txt', 'r') as f:
         for line in f:
             temp = line.split(' ')
@@ -16,6 +17,12 @@ def build_graph():
             city_b = City(str_city_b)
             seg_a = add_segment(city_b, temp[2], temp[3], temp[4])
             seg_b = add_segment(city_a, temp[2], temp[3], temp[4])
+            try:
+                limit = int(temp[3])
+            except ValueError:
+                limit = int(1)
+            if limit > max_limit:
+                max_limit = limit
 
             # Add to Cities Hash
             if str_city_a not in cities:
@@ -45,4 +52,4 @@ def build_graph():
                 cities[temp[0]] = City(temp[0])
             cities[temp[0]].lat = temp[1]
             cities[temp[0]].long = temp[2]
-    return graph, cities
+    return graph, cities, max_limit

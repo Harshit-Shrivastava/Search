@@ -24,9 +24,16 @@ from utils_graph import build_graph
 
 if __name__ == "__main__":
     # start_city, end_city, routing_options, routing_algorithm = sys.argv[1:]
-    graph, cities = build_graph()
-    result = best_path(graph, cities, "ids", "Bloomington,_Indiana",
-                     "Indianapolis,_Indiana", "time")
+    graph, cities, max_limit = build_graph()
+    result = best_path(graph, cities, "astar", "Canby,_California",
+                     "Allentown,_Pennsylvania", "time", max_limit)
     if result:
         print " ".join(str(i) for i in result[:2] if type(i) != str),  \
             " ".join(str(i) for i in result[3])
+
+    result = best_path(graph, cities, "astar", "Canby,_California",
+                     "Allentown,_Pennsylvania", "distance", max_limit)
+    if result:
+        print " ".join(str(i) for i in result[:2] if type(i) != str), \
+            " ".join(str(i) for i in result[3])
+
