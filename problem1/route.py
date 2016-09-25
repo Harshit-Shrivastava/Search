@@ -1,31 +1,67 @@
 """
 (1) Which search algorithm seems to work best for each routing options?
     -- Different algorithms perform better for each routing options.
-        1. Segments:
-        2. Distance:
-        3. Time:
-        4. Scenic:
+    Segments: BFS will perform better because it will find least number of
+    segments.
+    Distance: A-star will perform better because it will find the less
+    distance on
+    heuristic.
+    Time: BFS will perform better given the time constraint. A-star does not
+    always perform better because the heuristic is distance based.
+    Scenic: DFS will perform better in this case.
+
 (2) Which algorithm is fastest in terms of the amount of computation time
     required by your program, and by how much, according to your experiments?
     (To measure time accurately, you may want to temporarily include a loop in
     your program that runs the routing a few hundred or thousand times.)
-    --
+
+    Ran the algorithm within a loop for 100 times.
+    -- A-star algorithm takes 1194ms for Carson,_California to Bloomington,
+    Indiana Whereas bfs takes 14343ms, dfs takes 51359ms and IDS takes the
+    most time
+    A-star is 8~12 times faster than BFS
+    A-star is 30~40 times faster than DFS
+    A-star is more than 100 to 1000 times faster than IDS.
+
 (3) Which algorithm requires the least memory, and by how much, according to
     your experiments?
-    --
+
+    -- Memory stats: (Bloomington, Indiana to Toronto,_Ontario)
+    DFS takes the least memory. Since there is less branching factor at every
+    level there is only one node stored in the fringe at every depth. Whereas
+    BFS stores all of the branches and takes > 0.3MB of data for fringe
+    compared to DFS. IDS stores depth + the node of each branch at that level.
+    A-star consumes lot of space because we're using open set and closed set
+    with the fringe at every level.
+
 (4) Which heuristic function did you use, how good is it,
     and how might you make it better?
-    --
+
+    -- We used the distance between 2 coordinates as our heuristic for
+    routing_options=distance. This was calculated using the haversine-formula.
+    It is always less than or equal to the distance between 2 cities via any
+    path. It is fairly good for routes which have less number of
+    intersections connected. It can be made better by including
+
+        1. The direction sense in it and by giving points. Consider if we
+        are moving towards the end city then we can give +ve points and -ve for
+        moving away.
+        2. If given information on city latitude and longitude or more
+        information on the intersection then we can use heuristic better.
+
 (5) Supposing you start in Bloomington, which city should you travel to if
     you want to take the longest possible  drive (in miles) that is still the
     shortest path to that city? (In other words, which city is furthest from
     Bloomington?)
-        Skagway, Alaska is the farthest from Bloomington. To take the longest possible drive (in miles),
-         one should travel to Skagway, Alaska from Bloomington
-    --
+
+    -- Skagway, Alaska is the farthest from Bloomington. To take the longest
+    possible drive (in miles), one should travel to Skagway, Alaska from
+    Bloomington for 5814 miles according to the given data.
+
 """
 import sys
 from math import radians, cos, sin, asin, sqrt
+from memory_profiler import profile
 """
 routing_options =
 - segments finds a route with the fewest number of \turns"
@@ -146,6 +182,7 @@ def best_path(graph, cities, algo, start_city, end_city, routing_options, max_li
         return False
 
 
+@profile
 def dfs_bfs(graph, start_city, end_city, routing_options, algo_option):
     stack = [(start_city, [start_city])]
     visited = set()
@@ -172,6 +209,7 @@ def dfs_bfs(graph, start_city, end_city, routing_options, algo_option):
             stack.extend(temp_stack)
 
 
+@profile
 def ids(graph, start_city, end_city, routing_options):
     i = 0
     while True:
@@ -201,6 +239,7 @@ def ids(graph, start_city, end_city, routing_options):
         i += 1
 
 
+@profile
 def a_star(graph, cities, start_city, end_city, routing_options, max_limit):
     if start_city == end_city:
         return [start_city]
@@ -354,8 +393,9 @@ def calc_seg(path):
 if __name__ == "__main__":
     start_city, end_city, routing_algorithm, routing_options = sys.argv[1:]
     graph, cities, max_limit = build_graph()
+    result = []
     result = best_path(graph, cities, routing_algorithm, start_city,
-                     end_city, routing_options, max_limit)
+                       end_city, routing_options, max_limit)
     if result:
         print " ".join(str(i) for i in result[:2] if type(i) != str),  \
             " ".join(str(i) for i in result[3])
