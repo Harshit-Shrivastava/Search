@@ -21,8 +21,12 @@ def best_path(graph, cities, algo, start_city, end_city, routing_options, max_li
         path = a_star(graph, cities, start_city, end_city, routing_options, max_limit)
     else:
         return False
-    return calc_distance(path, graph), calc_time(path, graph), calc_seg(
-        path), path
+    if path is not None:
+        return calc_distance(path, graph), abs(calc_time(path, graph)), \
+               calc_seg(
+            path), path
+    else:
+        return False
 
 
 def dfs_bfs(graph, start_city, end_city, routing_options, algo_option):
@@ -83,36 +87,39 @@ def ids(graph, start_city, end_city, routing_options):
 def a_star(graph, cities, start_city, end_city, routing_options, max_limit):
     if start_city == end_city:
         return [start_city]
-    path = set()
-    fringe = set()
-    fringe.add(start_city)
-    previous = dict()
+    path = list()
+    fringe = list()
+    fringe.append(start_city)
     g = dict()
     f = dict()
     g[start_city] = 0
-    f[start_city] = heuristic(cities, start_city, end_city, routing_options,
-                              graph, max_limit)
+    f[start_city] = heuristic(cities, start_city, end_city, graph)
     while len(fringe) > 0:
         min_cost = float('Inf')
+        # curr = fringe.pop(0)
         for fx in f:
             if fx in fringe and f[fx] < min_cost:
                 min_cost = f[fx]
                 curr = fx
         if curr == end_city:
-            return create_path(previous, curr)
+            path.append(curr)
+            return path
         fringe.remove(curr)
-        path.add(curr)
+        path.append(curr)
+        temp_list = []
         for neighbour in graph[curr]:
             if neighbour.end_city.name not in path:
-                tentative_cost = g[curr] + cost(graph, curr, neighbour.end_city.name, routing_options)
                 if neighbour.end_city.name not in fringe:
-                    fringe.add(neighbour.end_city.name)
-                elif tentative_cost >= g[neighbour.end_city.name]:
-                    continue
-                previous[neighbour.end_city.name] = curr
-                g[neighbour.end_city.name] = tentative_cost
-                f[neighbour.end_city.name] = g[neighbour.end_city.name] + heuristic(cities, neighbour.end_city.name,
-                                                                                    end_city, routing_options, graph, max_limit)
+                    temp_cost = cost(graph, curr, neighbour.end_city.name,
+                                     routing_options)
+                    g[neighbour.end_city.name] = temp_cost
+                    f[neighbour.end_city.name] = g[neighbour.end_city.name] +\
+                                                 heuristic(cities, neighbour.end_city.name, end_city, graph)
+                    temp_list.append((neighbour.end_city.name,
+                                      f[neighbour.end_city.name]))
+        temp_list.sort(key=lambda a: a[1])
+        temp_list = [x for x, y in temp_list]
+        fringe.extend(temp_list)
     return False
 
 
@@ -149,20 +156,11 @@ def cost(graph, start_city, end_city, routing_options):
     return False
 
 
-def heuristic(cities, start_city, end_city, routing_options, graph, max_limit):
+def heuristic(cities, start_city, end_city, graph):
     distance_ = get_distance(start_city, cities, end_city, graph)
     if distance_ is None:
         distance_ = 0
-    if routing_options == "segments":
-        return distance_
-    elif routing_options == "time":
-        return distance_ * 1.0 / max_limit
-    elif routing_options == "distance":
-        return distance_
-    elif routing_options == "scenic":
-        return distance_
-    else:
-        return False
+    return distance_
 
 
 def get_distance(start_city, cities, end_city, graph):
