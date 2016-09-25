@@ -36,4 +36,3 @@ if __name__ == "__main__":
     if result:
         print " ".join(str(i) for i in result[:2] if type(i) != str), \
             " ".join(str(i) for i in result[3])
-
