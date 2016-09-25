@@ -387,7 +387,7 @@ def calc_seg(path):
 
 
 if __name__ == "__main__":
-    start_city, end_city, routing_algorithm, routing_options = sys.argv[1:]
+    start_city, end_city, routing_options, routing_algorithm = sys.argv[1:]
     graph, cities, max_limit = build_graph()
     result = []
     result = best_path(graph, cities, routing_algorithm, start_city,
