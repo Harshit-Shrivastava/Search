@@ -20,6 +20,8 @@
     you want to take the longest possible  drive (in miles) that is still the
     shortest path to that city? (In other words, which city is furthest from
     Bloomington?)
+        Skagway, Alaska is the farthest from Bloomington. To take the longest possible drive (in miles),
+         one should travel to Skagway, Alaska from Bloomington
     --
 """
 import sys
