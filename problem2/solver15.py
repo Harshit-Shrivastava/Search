@@ -1,3 +1,14 @@
+"""
+Heuristic functions tried:-
+1. No of tiles out of position
+2. Sum of Manhattan distances of a tile from it's expected postion
+3. Sum of Eucledian distance of a tile from it's expected postion
+
+Manhattan distance works best as the heuristic function is much closer to the actual cost involved
+in moving the tiles to their actual position. This makes sense as a tile can move only up(U), down(D),
+left(L) or right(R), which is like moving as if we are in Manhattan and can move only in these directions.
+"""
+
 import sys
 import copy
 from math import sqrt
