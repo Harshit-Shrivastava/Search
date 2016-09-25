@@ -58,19 +58,15 @@ def successor(cur_state_object):
     r = index[0]
     c = index[1]
     states = list()
-    #path1 = elem.path.copy()
     path1 = elem.path[:]
     path1.append("D")
     states.append(FringeElement(move(r, c, cur_state, "d"), elem.cost_so_far, elem.heuristic, path1))
-    #path2 = elem.path.copy()
     path2 = elem.path[:]
     path2.append("L")
     states.append(FringeElement(move(r, c, cur_state, "l"), elem.cost_so_far, elem.heuristic, path2))
-    #path3 = elem.path.copy()
     path3 = elem.path[:]
     path3.append("U")
     states.append(FringeElement(move(r, c, cur_state, "u"), elem.cost_so_far, elem.heuristic, path3))
-    #path4 = elem.path.copy()
     path4 = elem.path[:]
     path4.append("R")
     states.append(FringeElement(move(r, c, cur_state, "r"), elem.cost_so_far, elem.heuristic, path4))
@@ -113,6 +109,7 @@ def a_star(cur_square):
 
 
 # function to find position of an element in an 2D list
+#code from http://stackoverflow.com/questions/6518291/using-index-on-multidimensional-lists
 def index_search(cur_state, elem):
     for row, i in enumerate(cur_state):
         try:
@@ -121,7 +118,7 @@ def index_search(cur_state, elem):
             continue
         return row, column
     return -1
-
+#code from stackoverflow.com ends here
 
 # This function calculates the heuristic for the a-star algorithm
 def heuristic_calculator(element, goal_state):
