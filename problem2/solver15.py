@@ -168,7 +168,7 @@ def heuristic_helper(square, goal_state):
     return heuristic
 
 
-# heuristic  - Euclidean distance
+# heuristic - Euclidean distance
 def heuristic_helper_euclid(square, goal_state):
     heuristic = 0
     for i in range(0, 4):
@@ -190,9 +190,43 @@ def heuristic_helper_displaced(square, goal_state):
     return heuristic
 
 
+def permutation_invertions(square):
+    temp = list()
+    for i in range(4):
+        for j in range(4):
+            temp.append(int(square[i][j]))
+    per_inv = 0
+    for i in range(16):
+        for j in range(i, 16):
+            if temp[i] != 0 and temp[j] != 0 and temp[i] > temp[j]:
+                per_inv += 1
+    return per_inv
+
+
+# Function to check if input board is solvable
+# Built over the idea from http://www.geeksforgeeks.org/check-instance-15-puzzle-solvable/
+# Puzzle instance is solvable if -
+#   The blank is on an even row counting from the bottom and number of inversions is odd.
+#   The blank is on an odd row counting from the bottom and number of inversions is even.
+# for this variant of 15 Puzzle if the empty tile is on the edge of the board, the tile on the opposite side of the
+# board is slid into the opening, the new configuration of the board still remains unsolvable using the same logic
+def is_solvable(square):
+    per_inv = permutation_invertions(square)
+    index = index_search(square, "0")
+    pos_from_bottom = (3 - index[0]) + 1
+    if (pos_from_bottom % 2 == 0 and per_inv % 2 != 0) or (pos_from_bottom % 2 != 0 and per_inv % 2 == 0):
+        return True
+    else:
+        return False
+
+
 # main Function
 if __name__ == "__main__":
     if len(sys.argv) != 2:
         print("Invalid Input!")
     else:
-        print(" ".join(a_star(build_square(sys.argv[1]))))
+        square = build_square(sys.argv[1])
+        if is_solvable(square):
+            print(" ".join(a_star(square)))
+        else:
+            print("Not Solvable")
