@@ -2,11 +2,20 @@
 Heuristic functions tried:-
 1. No of tiles out of position
 2. Sum of Manhattan distances of a tile from it's expected postion
-3. Sum of Eucledian distance of a tile from it's expected postion
+3. Sum of Eucledian distances of a tile from it's expected postion
 
-Manhattan distance works best as the heuristic function is much closer to the actual cost involved
-in moving the tiles to their actual position. This makes sense as a tile can move only up(U), down(D),
-left(L) or right(R), which is like moving as if we are in Manhattan and can move only in these directions.
+Manhattan distance works best as the heuristic function is much closer to the
+actual cost involved in moving the tiles to their actual position. This makes
+sense as a tile can move only up(U), down(D), left(L) or right(R), which is like
+moving as if we are in Manhattan and can move only in these directions.
+
+If h(N) denotes the heuristic based on number of tiles out of position,
+h(M) denotes the heuristic based on sum of Manhattan distances of a tile from
+it's expected position and h(E) denotes the sum of Eucledian distances of a tile
+from it's expected position, then
+
+h(M) >= h(E) >= h(N)
+
 """
 
 import sys
