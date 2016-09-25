@@ -58,16 +58,20 @@ def successor(cur_state_object):
     r = index[0]
     c = index[1]
     states = list()
-    path1 = elem.path.copy()
+    #path1 = elem.path.copy()
+    path1 = elem.path[:]
     path1.append("D")
     states.append(FringeElement(move(r, c, cur_state, "d"), elem.cost_so_far, elem.heuristic, path1))
-    path2 = elem.path.copy()
+    #path2 = elem.path.copy()
+    path2 = elem.path[:]
     path2.append("L")
     states.append(FringeElement(move(r, c, cur_state, "l"), elem.cost_so_far, elem.heuristic, path2))
-    path3 = elem.path.copy()
+    #path3 = elem.path.copy()
+    path3 = elem.path[:]
     path3.append("U")
     states.append(FringeElement(move(r, c, cur_state, "u"), elem.cost_so_far, elem.heuristic, path3))
-    path4 = elem.path.copy()
+    #path4 = elem.path.copy()
+    path4 = elem.path[:]
     path4.append("R")
     states.append(FringeElement(move(r, c, cur_state, "r"), elem.cost_so_far, elem.heuristic, path4))
     return states
