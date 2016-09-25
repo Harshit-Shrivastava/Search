@@ -61,7 +61,6 @@
 """
 import sys
 from math import radians, cos, sin, asin, sqrt
-from memory_profiler import profile
 """
 routing_options =
 - segments finds a route with the fewest number of \turns"
@@ -182,7 +181,6 @@ def best_path(graph, cities, algo, start_city, end_city, routing_options, max_li
         return False
 
 
-@profile
 def dfs_bfs(graph, start_city, end_city, routing_options, algo_option):
     stack = [(start_city, [start_city])]
     visited = set()
@@ -209,7 +207,6 @@ def dfs_bfs(graph, start_city, end_city, routing_options, algo_option):
             stack.extend(temp_stack)
 
 
-@profile
 def ids(graph, start_city, end_city, routing_options):
     i = 0
     while True:
@@ -239,7 +236,6 @@ def ids(graph, start_city, end_city, routing_options):
         i += 1
 
 
-@profile
 def a_star(graph, cities, start_city, end_city, routing_options, max_limit):
     if start_city == end_city:
         return [start_city]
