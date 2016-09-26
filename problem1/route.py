@@ -342,6 +342,7 @@ def check_lat_long(city, cities):
 
 
 # haversine formula for distance
+#Reference for formula: http://stackoverflow.com/questions/4913349/haversine-formula-in-python-bearing-and-distance-between-two-gps-points
 def distance(lat1, lon1, lat2, lon2):
     lat1 = radians(float(lat1))
     lat2 = radians(float(lat2))
@@ -354,7 +355,7 @@ def distance(lat1, lon1, lat2, lon2):
     c = 2 * asin(sqrt(a))
     r = 3956  # Radius of earth 3956 miles
     return c * r
-
+#Reference ends
 
 def calc_distance(path, graph):
     dist = 0
