@@ -341,24 +341,19 @@ def check_lat_long(city, cities):
     return True
 
 
-# http://stackoverflow.com/questions/27928/calculate-distance-between-two-latitude-longitude-points-haversine-formula
+# haversine formula for distance
 def distance(lat1, lon1, lat2, lon2):
     lat1 = radians(float(lat1))
     lat2 = radians(float(lat2))
     lon1 = radians(float(lon1))
     lon2 = radians(float(lon2))
 
-    # haversine formula
     dlon = lon2 - lon1
     dlat = lat2 - lat1
     a = sin(dlat / 2) ** 2 + cos(lat1) * cos(lat2) * sin(dlon / 2) ** 2
     c = 2 * asin(sqrt(a))
     r = 3956  # Radius of earth 3956 miles
     return c * r
-
-    # if we find the equation of the line betwn strt n end
-    # then whatever city is on the line
-    # acc to that heuristic of min no of edges can b found
 
 
 def calc_distance(path, graph):
